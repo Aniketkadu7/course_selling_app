@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-mongoose.connect("mongodb+srv://Sersei7:serseiisme@cluster0.wsolr.mongodb.net/course_Selling_app");
+
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
