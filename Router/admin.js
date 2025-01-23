@@ -4,7 +4,7 @@ const {z} = require("zod");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { adminModel } = require("../db");
-const JWT_ADMIN_SECRET = "maitohadminhu";
+const {JWT_ADMIN_PASSWORD} = require("../config");
 const adminRouter = Router();
 
 adminRouter.use(express.json());
@@ -26,7 +26,7 @@ adminRouter.post("/login", async function(req,res){
     if(pwd){
         const token = jwt.sign({
             id : user._id.toString()
-        }, JWT_ADMIN_SECRET);
+        }, JWT_ADMIN_PASSWORD);
 
         res.json({
             token : token
@@ -92,7 +92,22 @@ adminRouter.post("/signup", async function(req,res){
 
 })
 
-adminRouter.post("/course", function(req,res){
+adminRouter.post("/course", async function(req,res){
+    const adminId = req.userid;
+    const {title,description,price} = req.body;
+
+    const course = await adminModel.create({
+        title,
+        description,
+        price,
+        creatorid : adminId
+
+    })
+
+    res.json({
+        msg : "Course successfully created",
+        courseId : course._id
+    })
 
 })
 

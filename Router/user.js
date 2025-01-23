@@ -3,7 +3,7 @@ const express = require("express");
 const userRouter = Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const JWT_USER_SECRET = "userhumai";
+const {JWT_USER_PASSWORD} = require("../config");
 const {z} = require("zod");
 const {userModel} = require("../db");
 userRouter.use(express.json());
@@ -32,7 +32,7 @@ userRouter.post("/login", async function(req,res){
     if(pwd){
         const token = jwt.sign({
             id : user._id.toString()
-        }, JWT_USER_SECRET);
+        }, JWT_USER_PASSWORD);
 
         res.json({
             token : token
