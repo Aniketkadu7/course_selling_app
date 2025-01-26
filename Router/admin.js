@@ -3,7 +3,7 @@ const express = require("express");
 const {z} = require("zod");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { adminModel } = require("../db");
+const { adminModel, courseModel } = require("../db");
 const {JWT_ADMIN_PASSWORD} = require("../config");
 const adminRouter = Router();
 
@@ -94,12 +94,13 @@ adminRouter.post("/signup", async function(req,res){
 
 adminRouter.post("/course", async function(req,res){
     const adminId = req.userid;
-    const {title,description,price} = req.body;
+    const {title,description,price,imageURL} = req.body;
 
-    const course = await adminModel.create({
+    const course = await courseModel.create({
         title,
         description,
         price,
+        imageURL,
         creatorid : adminId
 
     })
@@ -108,6 +109,39 @@ adminRouter.post("/course", async function(req,res){
         msg : "Course successfully created",
         courseId : course._id
     })
+
+})
+
+adminRouter.put("/course", async function(req,res){
+    const {title,description,price,imageURL,courseId} = req.body;
+
+    const course = await courseModel.findOne({
+        courseId : courseId
+    })
+
+    if(course){
+        courseModel.updateOne({ courseId : courseId  }, {
+            $set : {
+                title,
+                imageURL,
+                price,
+                description
+            }
+        })
+
+        res.json({
+            msg : "Course updated"
+        })
+    }else{
+        res.status(403).json({
+            msg : "No such course found"
+        })
+    }
+
+    
+})
+
+adminRouter.get("/courses/bulk", async function(req,res){
 
 })
 

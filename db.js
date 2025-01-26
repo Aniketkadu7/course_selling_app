@@ -27,6 +27,7 @@ course = new Schema({
     title : String,
     price : Number,
     description : String,
+    imageURL : String,
     creatorid : ObjectId
 
 })
