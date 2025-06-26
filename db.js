@@ -20,7 +20,6 @@ admin = new Schema({
     lastName : String,
     __id : ObjectId
 
-
 })
 
 course = new Schema({
@@ -35,7 +34,7 @@ course = new Schema({
 purchase = new Schema({
     __id : ObjectId,
     userId : ObjectId,
-    coursId : ObjectId
+    courseId : ObjectId
 })
 
 const userModel = mongoose.model("user",user);

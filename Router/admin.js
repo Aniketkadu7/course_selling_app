@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const { adminModel, courseModel } = require("../db");
 const {JWT_ADMIN_PASSWORD} = require("../config");
 const adminRouter = Router();
+const {adminmiddleware} = require("../middlewares/admin")
 
 adminRouter.use(express.json());
 
@@ -50,7 +51,7 @@ adminRouter.post("/signup", async function(req,res){
         }).refine((password)=> /[a-z]/.test(password), {
             msg : "Password must have atleast one lowercase character"
         }).refine((password)=> /[0-9]/.test(password), {
-            msg : "Password must have atleast oen digit"
+            msg : "Password must have atleast one digit"
         }).refine((password)=> /[!@#$%&]/.test(password), {
             msg : "Password must contain atleast one special character."
         })
@@ -92,7 +93,7 @@ adminRouter.post("/signup", async function(req,res){
 
 })
 
-adminRouter.post("/course", async function(req,res){
+adminRouter.post("/course",adminmiddleware, async function(req,res){
     const adminId = req.userid;
     const {title,description,price,imageURL} = req.body;
 
@@ -112,22 +113,24 @@ adminRouter.post("/course", async function(req,res){
 
 })
 
-adminRouter.put("/course", async function(req,res){
+adminRouter.put("/courseupdate", adminmiddleware ,async function(req,res){
     const {title,description,price,imageURL,courseId} = req.body;
 
     const course = await courseModel.findOne({
-        courseId : courseId
+        _id : courseId
     })
 
     if(course){
-        courseModel.updateOne({ courseId : courseId  }, {
+        const result = await courseModel.updateOne({ _id : courseId  }, {
             $set : {
-                title,
-                imageURL,
-                price,
-                description
+                title : title,
+                imageURL : imageURL,
+                price : price,
+                description : description
             }
         })
+
+        console.log(result);
 
         res.json({
             msg : "Course updated"
@@ -141,7 +144,21 @@ adminRouter.put("/course", async function(req,res){
     
 })
 
-adminRouter.get("/courses/bulk", async function(req,res){
+adminRouter.get("/courses/bulk", adminmiddleware, async function(req,res){
+    const adminid = req.userid;
+    const courses = await courseModel.find({
+        creatorid : adminid
+    })
+
+    if(courses){
+        res.json({
+            courses
+        })
+    }else{
+        res.status(411).json({
+            msg : "Not authorized"
+        })
+    }
 
 })
 

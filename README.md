@@ -16,4 +16,4 @@
 Use cookies instead of JWT for auth
 1. Add a rate limiting middleware
 2. Frontend in ejs (low pri)
-3. Frontend in React
+3. Frontend in React(high pri)

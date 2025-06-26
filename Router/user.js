@@ -5,14 +5,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const {JWT_USER_PASSWORD} = require("../config");
 const {z} = require("zod");
-const {userModel} = require("../db");
 userRouter.use(express.json());
-
-// function auth(){
-//     const token = req.headers.token;
-//     const decodedInfo = token
-
-// }
+const {usermiddleware} = require("../middlewares/user");
+const {userModel, courseModel,purchaseModel} = require("../db");
+const course = require("./course");
 
 
 userRouter.post("/login", async function(req,res){
@@ -103,11 +99,52 @@ userRouter.post("/signup", async function(req,res){
     
 })
 
-userRouter.get("/purchases", function(req,res){
+userRouter.get("/courses", async function(req,res){
+    const courses = await courseModel.find({});
     res.json({
-        message : "Your puchases are as follows."
+        courses
     })
 
+})
+
+userRouter.post("/purchaseCourse",usermiddleware,  async function(req, res){
+    const {title} = req.body;
+    const userid = req.userid;
+
+    const course = await courseModel.findOne({title : title});
+    if(course){
+        await purchaseModel.create({
+            userId : userid,
+            courseId : course._id
+        })
+
+        res.json({
+            msg : "Course purchased successfully."
+        })
+    }else{
+        res.json({
+            msg : "Please enter correct course details"
+        })
+    }
+
+
+
+})
+
+userRouter.get("/purchases", usermiddleware, async function(req,res){
+    const userid = req.userid;
+    const purchases = await purchaseModel.find({userId : userid});
+    if(purchases){
+        const courseids = await purchases.map(p => p.courseId);
+        const courses  = await courseModel.find({_id : { $in : courseids}});
+        res.json({
+            courses
+        })
+    }else{
+        res.json({
+            msg : "No courses found"
+        })
+    }
 })
 
 module.exports = {
