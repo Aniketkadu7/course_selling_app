@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { User, Mail, Edit3, Save, X } from 'lucide-react'
+import { User, Mail, CreditCard as Edit3, Save, X } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import axios from 'axios'
 

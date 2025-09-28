@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, Users, Star, Play, CheckCircle, ArrowLeft } from 'lucide-react'
+import { Clock, Users, Star, Play, CircleCheck as CheckCircle, ArrowLeft } from 'lucide-react'
 import axios from 'axios'
 import { useAuth } from '../hooks/useAuth'
 

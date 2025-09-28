@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Filter } from 'lucide-react'
+import { Search, ListFilter as Filter } from 'lucide-react'
 import axios from 'axios'
 import CourseCard from '../components/CourseCard'
 import { useAuth } from '../hooks/useAuth'
