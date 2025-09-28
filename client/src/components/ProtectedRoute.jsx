@@ -1,0 +1,27 @@
+import React from 'react'
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+
+const ProtectedRoute = ({ children, userType }) => {
+  const { user, admin, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      </div>
+    )
+  }
+
+  if (userType === 'user' && !user) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (userType === 'admin' && !admin) {
+    return <Navigate to="/admin/login" replace />
+  }
+
+  return children
+}
+
+export default ProtectedRoute

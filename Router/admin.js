@@ -162,6 +162,52 @@ adminRouter.get("/courses/bulk", adminmiddleware, async function(req,res){
 
 })
 
+adminRouter.delete("/course/:id", adminmiddleware, async function(req, res) {
+    try {
+        const adminId = req.userid;
+        const courseId = req.params.id;
+        
+        const course = await courseModel.findOne({
+            _id: courseId,
+            creatorid: adminId
+        });
+        
+        if (!course) {
+            return res.status(404).json({
+                msg: "Course not found or you don't have permission to delete it"
+            });
+        }
+        
+        await courseModel.deleteOne({ _id: courseId });
+        
+        res.json({
+            msg: "Course deleted successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            msg: "Error deleting course"
+        });
+    }
+});
+
+adminRouter.get("/dashboard", adminmiddleware, async function(req, res) {
+    try {
+        const adminId = req.userid;
+        const courses = await courseModel.find({ creatorid: adminId });
+        const totalCourses = courses.length;
+        const totalRevenue = courses.reduce((sum, course) => sum + (course.price || 0), 0);
+        
+        res.json({
+            totalCourses,
+            totalRevenue,
+            courses
+        });
+    } catch (error) {
+        res.status(500).json({
+            msg: "Error fetching dashboard data"
+        });
+    }
+});
 
 module.exports = {
     adminRouter : adminRouter

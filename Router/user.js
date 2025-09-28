@@ -147,6 +147,49 @@ userRouter.get("/purchases", usermiddleware, async function(req,res){
     }
 })
 
+userRouter.get("/profile", usermiddleware, async function(req, res) {
+    try {
+        const userId = req.userid;
+        const user = await userModel.findById(userId).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({
+                msg: "User not found"
+            });
+        }
+        
+        res.json({
+            user
+        });
+    } catch (error) {
+        res.status(500).json({
+            msg: "Error fetching profile"
+        });
+    }
+});
+
+userRouter.put("/profile", usermiddleware, async function(req, res) {
+    try {
+        const userId = req.userid;
+        const { firstName, lastName, username } = req.body;
+        
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            { firstName, lastName, username },
+            { new: true }
+        ).select('-password');
+        
+        res.json({
+            msg: "Profile updated successfully",
+            user: updatedUser
+        });
+    } catch (error) {
+        res.status(500).json({
+            msg: "Error updating profile"
+        });
+    }
+});
+
 module.exports = {
     userRouter : userRouter
 }
